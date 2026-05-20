@@ -1,18 +1,24 @@
 name: Publish registry cache
 
-# Runs weekly + on-demand. Fetches all Shadcn registry component metadata,
-# serialises the signature index, and uploads it as a GitHub Release asset.
-# The sitesudharo Dockerfile can download it with:
-#   curl -L https://github.com/ORG/component_mapper/releases/latest/download/signature_index.json
+# Fetches all Shadcn registry component metadata, serialises the signature
+# index, and uploads it as a GitHub Release asset so the sitesudharo
+# Dockerfile can download it instead of building it live.
+#
+# Download URL (for use in Dockerfile):
+#   https://github.com/ORG/component_mapper/releases/latest/download/signature_index.json
 
 on:
   schedule:
-    - cron: "0 2 * * 1"   # every Monday at 02:00 UTC
+    - cron: "0 2 * * 1"   # every Monday 02:00 UTC
   workflow_dispatch:        # manual trigger
 
 jobs:
   build-registry:
     runs-on: ubuntu-latest
+
+    env:
+      # Suppress LiteLLM noise about optional AWS/Azure modules not installed
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
 
     steps:
       - uses: actions/checkout@v4
@@ -22,43 +28,70 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e "."
 
       - name: Build signature index
         run: |
-          python - <<'EOF'
-          import asyncio, pathlib
+          python - << 'PYEOF'
+          import asyncio
+          import logging
+          import pathlib
+
+          # Silence LiteLLM / httpx warnings that are irrelevant here
+          logging.getLogger("LiteLLM").setLevel(logging.ERROR)
+          logging.getLogger("httpx").setLevel(logging.WARNING)
+
           from component_mapper import MapperPipeline, MapperSettings
-          from component_mapper.config import SignatureIndexConfig, MappingCacheConfig, LiteLLMConfig
+          from component_mapper.config import (
+              LiteLLMConfig,
+              MappingCacheConfig,
+              MCPConfig,
+              SignatureIndexConfig,
+          )
 
-          out = pathlib.Path("dist-cache")
-          out.mkdir(exist_ok=True)
+          OUT = pathlib.Path("dist-cache")
+          OUT.mkdir(exist_ok=True)
 
-          async def build():
+          async def build() -> None:
               s = MapperSettings(
                   _env_file=None,
+                  mcp=MCPConfig(startup_timeout_seconds=1),  # fail fast — not needed
                   signature_index=SignatureIndexConfig(
-                      index_cache_path=str(out / "signature_index.json"),
-                      custom_registry_path=str(out / "custom_registry.json"),
+                      index_cache_path=str(OUT / "signature_index.json"),
+                      custom_registry_path=str(OUT / "custom_registry.json"),
                   ),
-                  mapping_cache=MappingCacheConfig(cache_path=str(out / "mapping_cache.json")),
+                  mapping_cache=MappingCacheConfig(
+                      cache_path=str(OUT / "mapping_cache.json"),
+                  ),
                   litellm=LiteLLMConfig(config_path="", api_key_env="LLM_API_KEY"),
               )
               p = MapperPipeline(s)
               await p.initialize()
               n = len(p.signature_index.get_all_component_names())
               await p.shutdown()
-              print(f"Built: {n} components  →  {out}/signature_index.json")
+              size_kb = (OUT / "signature_index.json").stat().st_size // 1024
+              print(f"Built: {n} components  {size_kb} KB  →  {OUT}/signature_index.json")
 
           asyncio.run(build())
-          EOF
+          PYEOF
+
+      - name: Show output
+        run: |
+          ls -lh dist-cache/
+          python -c "
+          import json, pathlib
+          idx = json.loads(pathlib.Path('dist-cache/signature_index.json').read_text())
+          print(f'Components: {len(idx) if isinstance(idx, list) else \"(check format)\"}')
+          "
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: registry-cache-latest
           name: "Registry cache (auto-updated)"
-          body: "Pre-built component-mapper signature index. Downloaded by Docker build."
+          body: |
+            Pre-built component-mapper signature index.
+            Downloaded by the sitesudharo Dockerfile during `docker build`.
           files: |
             dist-cache/signature_index.json
             dist-cache/custom_registry.json
