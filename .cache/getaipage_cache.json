@@ -1,0 +1,41 @@
+{
+  "d691ae8a52a332a7069eaec2201dad6de1f1be46356e8c0fa052a6428f1f205c": {
+    "fingerprint_hash": "d691ae8a52a332a7069eaec2201dad6de1f1be46356e8c0fa052a6428f1f205c",
+    "component_name": "alert",
+    "registry_source": "shadcn",
+    "prop_mapping": {
+      "mappings": [],
+      "has_ambiguous": false,
+      "unmapped_props": []
+    },
+    "mapping_stage": "llm_mapped",
+    "confidence": 0.5,
+    "hit_count": 1
+  },
+  "1eead0483aca1676d40bb56c8c9d205fa43911abcfab25db37173c3c6ccc1575": {
+    "fingerprint_hash": "1eead0483aca1676d40bb56c8c9d205fa43911abcfab25db37173c3c6ccc1575",
+    "component_name": "button",
+    "registry_source": "shadcn",
+    "prop_mapping": {
+      "mappings": [],
+      "has_ambiguous": false,
+      "unmapped_props": []
+    },
+    "mapping_stage": "llm_mapped",
+    "confidence": 0.5,
+    "hit_count": 1
+  },
+  "25bf34fbd9687a8ccf046a9bb7b7425bdae468921dcbbd86c1d58efd8499cea4": {
+    "fingerprint_hash": "25bf34fbd9687a8ccf046a9bb7b7425bdae468921dcbbd86c1d58efd8499cea4",
+    "component_name": "calendar",
+    "registry_source": "shadcn",
+    "prop_mapping": {
+      "mappings": [],
+      "has_ambiguous": false,
+      "unmapped_props": []
+    },
+    "mapping_stage": "llm_mapped",
+    "confidence": 0.5,
+    "hit_count": 1
+  }
+}

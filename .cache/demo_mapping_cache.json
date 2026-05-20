@@ -1,0 +1,72 @@
+{
+  "e4dc628e8415fad3e0da0d278454eab4e9a695dd53c1643357c474b14bbc2ded": {
+    "fingerprint_hash": "e4dc628e8415fad3e0da0d278454eab4e9a695dd53c1643357c474b14bbc2ded",
+    "component_name": "card",
+    "registry_source": "shadcn",
+    "prop_mapping": {
+      "mappings": [
+        {
+          "segment_field": "h3:0",
+          "component_prop": "title",
+          "type": "text",
+          "confidence": 0.95,
+          "ambiguous": false
+        },
+        {
+          "segment_field": "img[src]",
+          "component_prop": "image",
+          "type": "image_url",
+          "confidence": 0.99,
+          "ambiguous": false
+        },
+        {
+          "segment_field": "p:0",
+          "component_prop": "description",
+          "type": "text",
+          "confidence": 0.88,
+          "ambiguous": false
+        }
+      ],
+      "has_ambiguous": false,
+      "unmapped_props": []
+    },
+    "mapping_stage": "structural_match",
+    "confidence": 0.82,
+    "hit_count": 2
+  },
+  "7033415c55fc76ff9a568348065b9f6dd04f7632b63ef1ee25002d94ca440ea7": {
+    "fingerprint_hash": "7033415c55fc76ff9a568348065b9f6dd04f7632b63ef1ee25002d94ca440ea7",
+    "component_name": "accordion",
+    "registry_source": "shadcn",
+    "prop_mapping": {
+      "mappings": [
+        {
+          "segment_field": "h3:0",
+          "component_prop": "title",
+          "type": "text",
+          "confidence": 0.95,
+          "ambiguous": false
+        },
+        {
+          "segment_field": "img[src]",
+          "component_prop": "image",
+          "type": "image_url",
+          "confidence": 0.99,
+          "ambiguous": false
+        },
+        {
+          "segment_field": "p:0",
+          "component_prop": "description",
+          "type": "text",
+          "confidence": 0.88,
+          "ambiguous": false
+        }
+      ],
+      "has_ambiguous": false,
+      "unmapped_props": []
+    },
+    "mapping_stage": "llm_mapped",
+    "confidence": 0.91,
+    "hit_count": 2
+  }
+}
