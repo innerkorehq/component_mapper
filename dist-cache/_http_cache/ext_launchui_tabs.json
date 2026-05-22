@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "tabs", "type": "registry:block", "title": "Tabs Section", "description": "Tabbed content sections for organizing information.", "files": [], "dependencies": ["@radix-ui/react-tabs", "class-variance-authority", "lucide-react", "next-themes"]}

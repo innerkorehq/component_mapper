@@ -95,7 +95,8 @@ def _parse_jsx_skeleton(jsx: str, max_depth: int) -> str:
     """Recursively parse JSX into skeleton string."""
     # Build token stream
     tokens = []
-    for m in re.finditer(r"<(/?)([A-Za-z][A-Za-z0-9]*)([^>]*)(/?)>", jsx):
+    # Use (?:[^>/]|/(?!>))* so the slash in /> is captured by group 4, not group 3
+    for m in re.finditer(r"<(/?)([A-Za-z][A-Za-z0-9]*)((?:[^>/]|/(?!>))*)(/?)>", jsx):
         is_close = m.group(1) == "/"
         tag = m.group(2)
         # attrs = m.group(3) - Unused
@@ -140,7 +141,10 @@ def _parse_jsx_skeleton(jsx: str, max_depth: int) -> str:
             if k == "close" and t.lower() == tag_lower:
                 i += 1
                 break
+            prev_i = i
             child_str, i = build_tree(i, depth + 1)
+            if i == prev_i:      # build_tree didn't advance (mismatched close tag)
+                i += 1           # skip token to prevent infinite loop
             if child_str:
                 children.append(child_str)
 

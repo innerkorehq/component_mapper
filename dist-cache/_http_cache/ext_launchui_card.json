@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "card", "type": "registry:ui", "title": "Card", "description": "A card component for containing related content.", "files": [], "dependencies": ["lucide-react"]}

@@ -1,0 +1,1 @@
+{"name": "adaptive-banner", "type": "registry:component", "title": "Adaptive Banner", "description": "A graceful fallback UI banner for error handling and alerts.", "dependencies": ["lucide-react"], "files": [{"path": "components/AdaptiveBanner.tsx", "type": "registry:component"}]}

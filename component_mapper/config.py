@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -55,6 +55,13 @@ class ExternalRegistryConfig(BaseModel):
     components: list[str] = Field(default_factory=list)
     description: str = ""
     open_source: bool = True
+
+    @computed_field
+    @property
+    def registry_index_url(self) -> str:
+        """URL to this registry's index (registry.json).
+        Derived by replacing {name} with 'registry' in url_template."""
+        return self.url_template.replace("{name}", "registry")
 
 
 # ---------------------------------------------------------------------------
@@ -212,7 +219,7 @@ OPEN_SOURCE_REGISTRIES: list[ExternalRegistryConfig] = [
 
 
 class RegistryConfig(BaseModel):
-    shadcn_registry_base_url: str = "https://ui.shadcn.com/r"
+    shadcn_registry_base_url: str = "https://ui.shadcn.com/r/styles/new-york-v4"
     custom_registry_base_url: str = ""
     fetch_timeout_seconds: int = 10
     max_concurrent_fetches: int = 10

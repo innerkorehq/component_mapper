@@ -1,0 +1,1 @@
+{"name": "adaptive-toast", "type": "registry:component", "title": "Adaptive Toast", "description": "A pre-styled, recovery-ready wrapper around Sonner for error notifications.", "dependencies": ["sonner", "lucide-react"], "files": [{"path": "components/AdaptiveToast.tsx", "type": "registry:component"}]}

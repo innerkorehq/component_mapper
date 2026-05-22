@@ -1,0 +1,1 @@
+{"name": "adaptive-fatal-error", "type": "registry:component", "title": "Adaptive Fatal Error", "description": "A full-screen, accessible modal for unrecoverable crashes.", "dependencies": ["lucide-react", "@radix-ui/react-dialog"], "files": [{"path": "components/AdaptiveFatalError.tsx", "type": "registry:component"}]}

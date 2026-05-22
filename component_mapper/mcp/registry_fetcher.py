@@ -71,7 +71,9 @@ class RegistryFetcher:
                     async with session.get(
                         url,
                         timeout=aiohttp.ClientTimeout(
-                            total=self.config.fetch_timeout_seconds
+                            total=self.config.fetch_timeout_seconds,
+                            connect=5,
+                            sock_read=self.config.fetch_timeout_seconds,
                         ),
                     ) as resp:
                         if resp.status == 200:
@@ -88,12 +90,14 @@ class RegistryFetcher:
         self._memory_cache[cache_key] = data
         self._cache_timestamps[cache_key] = time.time()
 
-        # Persist to disk
-        try:
-            async with aiofiles.open(disk_path, "w") as f:
-                await f.write(json.dumps(data))
-        except Exception:
-            pass
+        # Only persist successful responses — don't cache 404/error results so
+        # a retry with a corrected URL or fixed server gets a fresh fetch.
+        if data.get("files"):
+            try:
+                async with aiofiles.open(disk_path, "w") as f:
+                    await f.write(json.dumps(data))
+            except Exception:
+                pass
 
         return data
 
@@ -154,7 +158,9 @@ class RegistryFetcher:
                     async with session.get(
                         url,
                         timeout=aiohttp.ClientTimeout(
-                            total=self.config.fetch_timeout_seconds
+                            total=self.config.fetch_timeout_seconds,
+                            connect=5,
+                            sock_read=self.config.fetch_timeout_seconds,
                         ),
                     ) as resp:
                         if resp.status == 200:
@@ -178,11 +184,12 @@ class RegistryFetcher:
 
         self._memory_cache[cache_key] = data
         self._cache_timestamps[cache_key] = time.time()
-        try:
-            async with aiofiles.open(disk_path, "w") as f:
-                await f.write(json.dumps(data))
-        except Exception:
-            pass
+        if data.get("files"):
+            try:
+                async with aiofiles.open(disk_path, "w") as f:
+                    await f.write(json.dumps(data))
+            except Exception:
+                pass
 
         return data
 
@@ -203,6 +210,106 @@ class RegistryFetcher:
                 tasks[key] = self.fetch_from_external(
                     reg.url_template, comp, reg.name
                 )
+
+        if not tasks:
+            return {}
+
+        results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+        return {
+            key: (r if isinstance(r, dict) else {"name": key, "files": []})
+            for key, r in zip(tasks.keys(), results)
+        }
+
+    # ── Registry discovery ────────────────────────────────────────────────────
+
+    # Types that are not UI components — skip when building the index
+    _SKIP_TYPES = frozenset({
+        "registry:style", "registry:example", "registry:internal",
+        "registry:theme", "registry:hook", "registry:lib",
+    })
+
+    async def fetch_registry_index(self, reg) -> list[str]:
+        """
+        Fetch registry.json for a single external registry and return the
+        list of UI-compatible component names.
+
+        Works by calling fetch_from_external with component_name="registry",
+        which resolves to: url_template.replace("{name}", "registry").
+        Reuses all existing disk-caching and timeout logic.
+        """
+        data = await self.fetch_from_external(
+            reg.url_template, "registry", reg.name
+        )
+        if not data:
+            return []
+
+        items: list = (
+            data.get("items", []) if isinstance(data, dict)
+            else (data if isinstance(data, list) else [])
+        )
+        return [
+            item["name"]
+            for item in items
+            if isinstance(item, dict)
+            and item.get("name")
+            and item.get("name") != "registry"
+            and item.get("type", "registry:ui") not in self._SKIP_TYPES
+        ]
+
+    async def discover_all_external(
+        self,
+        external_registries: list,
+        concurrency: int = 10,
+    ) -> dict[str, list[str]]:
+        """
+        Fetch registry.json for every registry in *external_registries* and
+        return a mapping of registry_name → [component_names].
+
+        Uses a semaphore so at most *concurrency* registries are probed at once.
+        Registries that 404, timeout, or return no UI components are omitted.
+        """
+        sem = asyncio.Semaphore(concurrency)
+
+        async def _probe(reg):
+            async with sem:
+                names = await self.fetch_registry_index(reg)
+            return reg.name, names
+
+        results = await asyncio.gather(
+            *[_probe(r) for r in external_registries if r.open_source],
+            return_exceptions=True,
+        )
+        return {
+            name: comps
+            for name, comps in (r for r in results if not isinstance(r, Exception))
+            if comps
+        }
+
+    async def fetch_all_external_with_discovery(
+        self,
+        external_registries: list,
+    ) -> dict[str, dict]:
+        """
+        Like fetch_all_external but first auto-discovers component names from
+        each registry's registry.json, then fetches every discovered component.
+
+        Hard-coded components in reg.components are always included.
+        Registries without a registry.json fall back to reg.components only.
+
+        Returns dict keyed by "registry_name/component_name".
+        """
+        # Step 1: discover all component names from registry.json files
+        discovered = await self.discover_all_external(external_registries)
+
+        # Step 2: merge with hard-coded components lists
+        tasks: dict[str, asyncio.coroutine] = {}
+        for reg in external_registries:
+            if not reg.open_source:
+                continue
+            all_comps = list({*reg.components, *discovered.get(reg.name, [])})
+            for comp in all_comps:
+                key = f"{reg.name}/{comp}"
+                tasks[key] = self.fetch_from_external(reg.url_template, comp, reg.name)
 
         if not tasks:
             return {}

@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "testimonials", "type": "registry:block", "title": "Testimonials", "description": "Customer testimonial sections with carousel and grid layouts.", "files": [], "dependencies": ["@radix-ui/react-avatar", "@radix-ui/react-slot", "class-variance-authority", "embla-carousel-react", "lucide-react"]}

@@ -1,6 +1,6 @@
 [project]
 name = "component-mapper"
-version = "0.1.0"
+version = "0.3.1"
 description = "Maps ClassifiedSegment objects to Shadcn UI components and Astro wrappers"
 requires-python = ">=3.12"
 dependencies = [

@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "gallery", "type": "registry:block", "title": "Gallery", "description": "Image gallery sections with grid and masonry layouts.", "files": [], "dependencies": ["lucide-react", "next-themes"]}

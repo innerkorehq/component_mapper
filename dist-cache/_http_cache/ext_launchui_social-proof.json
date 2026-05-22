@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "social-proof", "type": "registry:block", "title": "Social Proof", "description": "Social proof sections with testimonials, ratings, and trust badges.", "files": [], "dependencies": ["@radix-ui/react-avatar"]}

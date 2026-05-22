@@ -28,32 +28,144 @@ logger = logging.getLogger(__name__)
 
 # Static type map: ComponentType → list of Shadcn component names
 TYPE_MAP: dict[ComponentType, list[str]] = {
-    ComponentType.LAYOUT_HEADER: ["navigation-menu"],
-    ComponentType.LAYOUT_FOOTER: [],
-    ComponentType.LAYOUT_NAV: ["navigation-menu", "menubar"],
-    ComponentType.LAYOUT_SIDEBAR: ["sidebar"],
-    ComponentType.LAYOUT_BREADCRUMB: ["breadcrumb"],
-    ComponentType.COLLECTION_PRODUCT_CARD: ["card"],
-    ComponentType.COLLECTION_BLOG_CARD: ["card"],
-    ComponentType.COLLECTION_NEWS_ITEM: ["card"],
-    ComponentType.COLLECTION_PRODUCT_LIST: ["table"],
-    ComponentType.COLLECTION_BLOG_LIST: ["card"],
-    ComponentType.COLLECTION_NEWS_LIST: ["card"],
-    ComponentType.SECTION_HERO: [],
-    ComponentType.SECTION_FEATURE_GRID: ["card"],
-    ComponentType.SECTION_TESTIMONIAL: ["card"],
-    ComponentType.SECTION_CTA: ["card", "button"],
-    ComponentType.SECTION_FAQ: ["accordion"],
-    ComponentType.SECTION_PRICING: ["card"],
-    ComponentType.UI_FORM: ["form", "input", "select"],
-    ComponentType.UI_MODAL: ["dialog", "sheet"],
-    ComponentType.UI_TABLE: ["table"],
-    ComponentType.UI_CAROUSEL: ["carousel"],
-    ComponentType.UI_PAGINATION: ["pagination", "bundui/pagination", "hextaui/pagination"],
-    ComponentType.UI_SEARCH: ["command"],
-    ComponentType.CONTENT_ARTICLE: [],
-    ComponentType.CONTENT_RICH_TEXT: [],
-    ComponentType.CONTENT_MEDIA: ["aspect-ratio"],
+    # ── Layout ────────────────────────────────────────────────────────────────
+    ComponentType.LAYOUT_HEADER:        ["navigation-menu"],
+    ComponentType.LAYOUT_FOOTER:        [],
+    ComponentType.LAYOUT_NAV:           ["navigation-menu", "menubar"],
+    ComponentType.LAYOUT_SIDEBAR:       ["sidebar"],
+    ComponentType.LAYOUT_BREADCRUMB:    ["breadcrumb"],
+    ComponentType.LAYOUT_TAB_BAR:       ["tabs"],
+    ComponentType.LAYOUT_MEGA_MENU:     ["navigation-menu"],
+    ComponentType.LAYOUT_COOKIE_BANNER: [],
+
+    # ── Collections ───────────────────────────────────────────────────────────
+    ComponentType.COLLECTION_PRODUCT_CARD:   ["card"],
+    ComponentType.COLLECTION_PRODUCT_LIST:   ["table"],
+    ComponentType.COLLECTION_BLOG_CARD:      ["card"],
+    ComponentType.COLLECTION_BLOG_LIST:      ["card"],
+    ComponentType.COLLECTION_NEWS_ITEM:      ["card"],
+    ComponentType.COLLECTION_NEWS_LIST:      ["card"],
+    ComponentType.COLLECTION_REVIEW_CARD:    ["card"],
+    ComponentType.COLLECTION_TEAM_MEMBER:    ["card", "avatar"],
+    ComponentType.COLLECTION_CATEGORY_CARD:  ["card"],
+    ComponentType.COLLECTION_LOGO_ITEM:      ["avatar"],
+    ComponentType.COLLECTION_FEATURE_CARD:   ["card"],
+    ComponentType.COLLECTION_PRICING_CARD:   ["card"],
+    ComponentType.COLLECTION_STAT_ITEM:      ["card", "badge"],
+    ComponentType.COLLECTION_JOB_LISTING:    ["card"],
+    ComponentType.COLLECTION_EVENT_CARD:     ["card", "badge"],
+    ComponentType.COLLECTION_PORTFOLIO_ITEM: ["card", "aspect-ratio"],
+    ComponentType.COLLECTION_STEP_ITEM:      [],
+
+    # ── Sections ─────────────────────────────────────────────────────────────
+    ComponentType.SECTION_HERO:           [],
+    ComponentType.SECTION_FEATURE_GRID:   ["card"],
+    ComponentType.SECTION_TESTIMONIAL:    ["card", "carousel"],
+    ComponentType.SECTION_CTA:            ["card", "button"],
+    ComponentType.SECTION_FAQ:            ["accordion"],
+    ComponentType.SECTION_PRICING:        ["card"],
+    ComponentType.SECTION_STATS:          ["card", "badge"],
+    ComponentType.SECTION_HOW_IT_WORKS:   ["card", "separator"],
+    ComponentType.SECTION_TEAM:           ["card", "avatar"],
+    ComponentType.SECTION_PARTNERS:       ["avatar"],
+    ComponentType.SECTION_COMPARISON:     ["table"],
+    ComponentType.SECTION_BANNER:         ["alert"],
+    ComponentType.SECTION_CONTACT:        ["form", "input", "textarea"],
+    ComponentType.SECTION_GALLERY:        ["aspect-ratio", "carousel"],
+    ComponentType.SECTION_VIDEO_SHOWCASE: ["aspect-ratio"],
+    ComponentType.SECTION_AWARDS:         [],
+    ComponentType.SECTION_CASE_STUDY:     ["card"],
+    ComponentType.SECTION_INTEGRATION:    [],
+    ComponentType.SECTION_CAREERS:        ["card"],
+    ComponentType.SECTION_ABOUT:          [],
+    ComponentType.SECTION_SOCIAL_PROOF:   ["badge"],
+    ComponentType.SECTION_BEFORE_AFTER:   ["aspect-ratio"],
+
+    # ── E-commerce ────────────────────────────────────────────────────────────
+    ComponentType.ECOMMERCE_PRODUCT_DETAIL:  ["card", "badge", "button"],
+    ComponentType.ECOMMERCE_PRODUCT_GALLERY: ["carousel", "aspect-ratio"],
+    ComponentType.ECOMMERCE_CART:            ["table", "button"],
+    ComponentType.ECOMMERCE_CHECKOUT:        ["form", "input", "select"],
+    ComponentType.ECOMMERCE_ORDER_SUMMARY:   ["card", "table"],
+    ComponentType.ECOMMERCE_FILTER_PANEL:    ["checkbox", "select", "slider"],
+    ComponentType.ECOMMERCE_REVIEW_LIST:     ["card"],
+    ComponentType.ECOMMERCE_UPSELL:          ["card", "carousel"],
+    ComponentType.ECOMMERCE_WISHLIST:        ["card", "button"],
+    ComponentType.ECOMMERCE_SHIPPING_INFO:   ["accordion"],
+    ComponentType.ECOMMERCE_PROMO_BANNER:    ["alert", "badge"],
+    ComponentType.ECOMMERCE_SIZE_GUIDE:      ["table", "dialog"],
+    ComponentType.ECOMMERCE_PROMO_CODE:      ["input", "button"],
+
+    # ── Dashboard ─────────────────────────────────────────────────────────────
+    ComponentType.DASHBOARD_TOP_NAV:             ["navigation-menu", "avatar"],
+    ComponentType.DASHBOARD_SIDEBAR_NAV:         ["sidebar"],
+    ComponentType.DASHBOARD_KPI_CARD:            ["card", "badge"],
+    ComponentType.DASHBOARD_STAT_ROW:            ["card"],
+    ComponentType.DASHBOARD_CHART:               ["chart", "card"],
+    ComponentType.DASHBOARD_DATA_GRID:           ["table"],
+    ComponentType.DASHBOARD_ACTIVITY_FEED:       ["scroll-area"],
+    ComponentType.DASHBOARD_NOTIFICATION_CENTER: ["alert", "sonner"],
+    ComponentType.DASHBOARD_CALENDAR_WIDGET:     ["calendar"],
+    ComponentType.DASHBOARD_QUICK_ACTIONS:       ["button"],
+    ComponentType.DASHBOARD_PROGRESS_TRACKER:    ["progress"],
+    ComponentType.DASHBOARD_EMPTY_STATE:         ["button"],
+
+    # ── Transaction ───────────────────────────────────────────────────────────
+    ComponentType.TRANSACTION_PAYMENT_FORM:        ["form", "input", "card"],
+    ComponentType.TRANSACTION_ORDER_CONFIRMATION:  ["card"],
+    ComponentType.TRANSACTION_INVOICE:             ["table", "card"],
+    ComponentType.TRANSACTION_REFUND_FORM:         ["form", "input", "textarea"],
+    ComponentType.TRANSACTION_SUBSCRIPTION_MGMT:   ["card", "table", "badge"],
+
+    # ── Portfolio ─────────────────────────────────────────────────────────────
+    ComponentType.PORTFOLIO_WORK_GRID:      ["card", "tabs"],
+    ComponentType.PORTFOLIO_PROJECT_DETAIL: ["card", "aspect-ratio", "badge"],
+    ComponentType.PORTFOLIO_SKILLS:         ["progress", "badge"],
+    ComponentType.PORTFOLIO_EXPERIENCE:     ["separator"],
+    ComponentType.PORTFOLIO_SERVICES:       ["card"],
+    ComponentType.PORTFOLIO_RESUME:         ["card", "tabs", "separator"],
+    ComponentType.PORTFOLIO_CLIENTS:        ["avatar"],
+    ComponentType.PORTFOLIO_PROCESS:        ["card", "separator"],
+
+    # ── UI Elements ───────────────────────────────────────────────────────────
+    ComponentType.UI_FORM:           ["form", "input", "select"],
+    ComponentType.UI_MODAL:          ["dialog", "sheet"],
+    ComponentType.UI_TABLE:          ["table"],
+    ComponentType.UI_CAROUSEL:       ["carousel"],
+    ComponentType.UI_PAGINATION:     ["pagination", "bundui/pagination", "hextaui/pagination"],
+    ComponentType.UI_SEARCH:         ["command"],
+    ComponentType.UI_RATING:         [],
+    ComponentType.UI_TIMELINE:       ["separator"],
+    ComponentType.UI_CHART:          ["chart"],
+    ComponentType.UI_FILTER:         ["checkbox", "select", "slider"],
+    ComponentType.UI_PROGRESS_STEPS: ["progress"],
+    ComponentType.UI_NOTIFICATION:   ["alert", "sonner"],
+    ComponentType.UI_MAP:            ["aspect-ratio"],
+    ComponentType.UI_COUNTDOWN:      [],
+    ComponentType.UI_CHAT_WIDGET:    [],
+    ComponentType.UI_SOCIAL_SHARE:   [],
+    ComponentType.UI_ACCORDION:      ["collapsible"],
+    ComponentType.UI_TABS:           ["tabs"],
+    ComponentType.UI_STEPPER:        ["progress"],
+
+    # ── Lead Generation ───────────────────────────────────────────────────────
+    ComponentType.LEAD_SIGNUP_FORM:    ["form", "input", "button"],
+    ComponentType.LEAD_NEWSLETTER:     ["input", "button"],
+    ComponentType.LEAD_LEAD_CAPTURE:   ["form", "input", "textarea", "button"],
+    ComponentType.LEAD_DEMO_BOOKING:   ["card", "button"],
+    ComponentType.LEAD_FREE_TRIAL_CTA: ["button", "card"],
+    ComponentType.LEAD_EXIT_INTENT:    ["dialog"],
+    ComponentType.LEAD_SOCIAL_PROOF:   ["badge"],
+
+    # ── Content ───────────────────────────────────────────────────────────────
+    ComponentType.CONTENT_ARTICLE:    [],
+    ComponentType.CONTENT_RICH_TEXT:  [],
+    ComponentType.CONTENT_MEDIA:      ["aspect-ratio"],
+    ComponentType.CONTENT_CODE_BLOCK: [],
+    ComponentType.CONTENT_VIDEO:      ["aspect-ratio"],
+    ComponentType.CONTENT_EMBED:      ["aspect-ratio"],
+    ComponentType.CONTENT_DOWNLOAD:   ["button"],
+
     ComponentType.UNKNOWN: [],
 }
 
@@ -531,13 +643,14 @@ class SignatureIndex:
                 )
                 self._index[name] = _build_signature_from_hints(name, hints)
 
-        # ── External open-source registries ───────────────────────────────────
+        # ── External open-source registries (with auto-discovery) ────────────
         ext_regs = self._settings.registry.external_registries
         if ext_regs:
             logger.info(
-                "Fetching components from %d external registries", len(ext_regs)
+                "Discovering components from %d external registries via registry.json",
+                len(ext_regs),
             )
-            ext_source_map = await self._fetcher.fetch_all_external(ext_regs)
+            ext_source_map = await self._fetcher.fetch_all_external_with_discovery(ext_regs)
 
             for compound_name, reg_data in ext_source_map.items():
                 # compound_name = "bundui/pagination", "hextaui/pagination", etc.

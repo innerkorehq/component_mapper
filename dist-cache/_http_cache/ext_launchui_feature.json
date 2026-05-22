@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "feature", "type": "registry:block", "title": "Feature Section", "description": "Feature sections with various layouts for highlighting product capabilities.", "files": [], "dependencies": ["class-variance-authority", "next-themes"]}

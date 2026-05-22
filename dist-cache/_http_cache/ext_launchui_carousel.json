@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "carousel", "type": "registry:block", "title": "Carousel", "description": "Image and content carousels with multiple display options.", "files": [], "dependencies": ["@radix-ui/react-slot", "class-variance-authority", "embla-carousel-react", "lucide-react", "next-themes"]}

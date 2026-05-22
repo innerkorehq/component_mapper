@@ -1,0 +1,1 @@
+{"$schema": "https://ui.shadcn.com/schema/registry-item.json", "name": "bento-grid", "type": "registry:block", "title": "Bento Grid", "description": "A bento-style grid layout for showcasing features or content blocks.", "files": [], "dependencies": ["lucide-react"]}
