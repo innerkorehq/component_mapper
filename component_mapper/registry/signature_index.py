@@ -597,13 +597,10 @@ class SignatureIndex:
         self._built = False
 
     async def build(self) -> None:
-        """Build full index. Load from cache if fresh, else rebuild."""
+        """Build full index. Load from cache if present, else rebuild."""
         cache_path = Path(self._settings.signature_index.index_cache_path)
         if await self._load_from_cache(cache_path):
-            logger.info(
-                "Loaded signature index from cache (%d components)", len(self._index)
-            )
-            return
+            return  # success already logged inside _load_from_cache
         logger.info("Rebuilding signature index — this may take 5-15s on first run")
         await self._rebuild()
         await self._persist(cache_path)
@@ -703,17 +700,23 @@ class SignatureIndex:
             return False
         try:
             raw = json.loads(cache_path.read_text())
+            # No TTL check: the signature index is a processed artifact whose
+            # freshness is controlled by replacing the file (new Docker build /
+            # new GitHub Release), not by a wall-clock expiry.  The http_cache_ttl
+            # applies only to the raw per-component JSON files in RegistryFetcher.
             built_at = raw.get("built_at", 0)
-            ttl = self._settings.registry.http_cache_ttl_hours * 3600
-            if time.time() - built_at > ttl:
-                logger.debug("Signature cache expired")
-                return False
+            age_h = (time.time() - built_at) / 3600 if built_at else 0
             components = raw.get("components", {})
             for name, data in components.items():
                 try:
                     self._index[name] = ComponentSignature.model_validate(data)
                 except Exception:
                     pass
+            if self._index:
+                logger.info(
+                    "Loaded signature index from cache: %d components  age=%.0fh  path=%s",
+                    len(self._index), age_h, cache_path,
+                )
             return bool(self._index)
         except Exception as exc:
             logger.warning("Failed to load signature cache: %s", exc)
